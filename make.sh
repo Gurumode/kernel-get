@@ -9,6 +9,9 @@ fi
 
 make ARCH=arm64 INSTALL_MOD_PATH=../../build/linux-"$1"-bpi-gurumode modules_install
 
+
+
 mv arch/arm64/boot/Image ../../build/linux-"$1"-bpi-gurumode/Image
 mv System.map ../../build/linux-"$1"-bpi-gurumode/
 mv .config ../../build/linux-"$1"-bpi-gurumode/
+mv arch/arm64/boot/dtb ../../build/linux-"$1"-bpi-gurumode/
