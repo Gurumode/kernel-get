@@ -1,10 +1,11 @@
+import getpass
 import os
 import requests
 import subprocess
 import sys
 from bs4 import BeautifulSoup
 
-downloadDir = "/home/bmurphy/Code/kernel-get/Downloads"
+downloadDir = "/home/" + getpass.getuser() + "/Code/kernel-get/Downloads"
 
 def check_latest_kernel():
 	url = "https://www.kernel.org/"
