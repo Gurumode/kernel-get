@@ -78,8 +78,8 @@ subprocess.call(["bash", "make.sh", version])
 time_make = time.time() - start_time
 
 print("Kernel successfully built.")
-print(f"Check:\t{time_version}")
+print(f"Check:\t\t{time_version}")
 print(f"Download:\t{time_download}")
 print(f"Extract:\t{time_extract}")
-print(f"Config:\t{time_config}")
-print(f"Make:\t{time_make}")
+print(f"Config:\t\t{time_config}")
+print(f"Make:\t\t{time_make}")
