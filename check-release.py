@@ -1,6 +1,7 @@
 import getpass
 import os
 import requests
+import time
 import subprocess
 import sys
 from bs4 import BeautifulSoup
@@ -47,18 +48,38 @@ def download_file(url, save_path):
 	with open(save_path, 'wb') as file:
 		file.write(response.content)
 
+start_time = time.time()
 version, link = check_latest_kernel()
 print("Version: ", version)
 print("Link: ", link)
+time_version = time.time() - start_time
+
 
 #	This is where we need to check if the latest version is newer than the
 #	previously compiled version.  If so, then it needs to be downloaded,
 #	extracted, and built.
 
 #	For now, we assume it is newer
+start_time = time.time()
 tarball = "linux-" + version + ".tar.xz"
 download_file(link, downloadDir + "/" + tarball)
+time_download = time.time() - start_time
 
+start_time = time.time()
 subprocess.call(["bash", "extract.sh", version])
+time_extract = time.time() - start_time
+
+start_time = time.time()
 subprocess.call(["bash", "config.sh", version])
+time_config = time.time() - start_time
+
+start_time = time.time()
 subprocess.call(["bash", "make.sh", version])
+time_make = time.time() - start_time
+
+print("Kernel successfully built.")
+print(f"Check:\t{time_version}")
+print(f"Download:\t{time_download}")
+print(f"Extract:\t{time_extract}")
+print(f"Config:\t{time_config}")
+print(f"Make:\t{time_make}")
