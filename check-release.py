@@ -5,7 +5,8 @@ import subprocess
 import sys
 from bs4 import BeautifulSoup
 
-downloadDir = "/home/" + getpass.getuser() + "/Code/kernel-get/Downloads"
+#downloadDir = "/home/" + getpass.getuser() + "/Code/kernel-get/Downloads"
+downloadDir = "Downloads"
 
 def check_latest_kernel():
 	url = "https://www.kernel.org/"
@@ -31,8 +32,8 @@ def check_latest_kernel():
 			print("Error:", e)
 			sys.exit(1)
 	
-	#create_directory(downloadDir)
-	#download_file(link, downloadDir + "/" + latest_tarball)
+	create_directory(downloadDir)
+	download_file(link, downloadDir + "/" + latest_tarball)
 	return latest_version, link
 
 def create_directory(directory_path):
