@@ -8,8 +8,18 @@ from bs4 import BeautifulSoup
 
 #downloadDir = "/home/" + getpass.getuser() + "/Code/kernel-get/Downloads"
 downloadDir = "Downloads"
+buildPrefix = "linux-"
+buildSuffix = "-bpi-gurumode"
+
+#	Create a few variables to track how long each step takes.
+time_version = 0
+time_download = 0
+time_extract = 0
+time_config = 0
 
 def check_latest_kernel():
+	start_time = time.time()
+	
 	url = "https://www.kernel.org/"
 	response = requests.get(url)
 	soup = BeautifulSoup(response.text, "html.parser")
@@ -34,7 +44,10 @@ def check_latest_kernel():
 			sys.exit(1)
 	
 	create_directory(downloadDir)
-	download_file(link, downloadDir + "/" + latest_tarball)
+	#download_file(link, downloadDir + "/" + latest_tarball)
+	
+	time_version = time.time() - start_time()
+	
 	return latest_version, link
 
 def create_directory(directory_path):
@@ -43,16 +56,42 @@ def create_directory(directory_path):
 	
 
 def download_file(url, save_path):
+	start_time = time.time()
+	
 	create_directory(downloadDir)
 	response = requests.get(url)
 	with open(save_path, 'wb') as file:
 		file.write(response.content)
 
-start_time = time.time()
+	time_download = time.time() - start_time
+
+
+def extract_tarball(version):
+	start_time = time.time()
+	
+	subprocess.call(["bash", "extract.sh", version])
+	
+	time_extract = time.time() - start_time
+
+
+def config_build(version):
+	start_time = time.time()
+	
+	subprocess.call(["bash", "config.sh", version])
+	
+	time_config = time.time() - start_time
+
+
+def make_build(version):
+	start_time = time.time()
+	
+	subprocess.call(["bash", "make.sh", version])
+	
+	time_make = time.time() - start_time
+
 version, link = check_latest_kernel()
 print("Version: ", version)
 print("Link: ", link)
-time_version = time.time() - start_time
 
 
 #	This is where we need to check if the latest version is newer than the
@@ -60,22 +99,13 @@ time_version = time.time() - start_time
 #	extracted, and built.
 
 #	For now, we assume it is newer
-start_time = time.time()
 tarball = "linux-" + version + ".tar.xz"
 download_file(link, downloadDir + "/" + tarball)
-time_download = time.time() - start_time
 
-start_time = time.time()
-subprocess.call(["bash", "extract.sh", version])
-time_extract = time.time() - start_time
+extract_tarball(version)
+config_build(version)
+make_build(version)
 
-start_time = time.time()
-subprocess.call(["bash", "config.sh", version])
-time_config = time.time() - start_time
-
-start_time = time.time()
-subprocess.call(["bash", "make.sh", version])
-time_make = time.time() - start_time
 
 print("Kernel successfully built.")
 print(f"Check:\t\t{time_version}")
