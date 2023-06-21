@@ -16,6 +16,7 @@ time_version = 0
 time_download = 0
 time_extract = 0
 time_config = 0
+time_make = 0
 
 def check_latest_kernel():
 	start_time = time.time()
@@ -104,7 +105,7 @@ download_file(link, downloadDir + "/" + tarball)
 
 extract_tarball(version)
 config_build(version)
-make_build(version)
+#make_build(version)
 
 
 print("Kernel successfully built.")
