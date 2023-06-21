@@ -46,7 +46,7 @@ def check_latest_kernel():
 	create_directory(downloadDir)
 	#download_file(link, downloadDir + "/" + latest_tarball)
 	
-	time_version = time.time() - start_time()
+	time_version = time.time() - start_time
 	
 	return latest_version, link
 
