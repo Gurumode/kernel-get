@@ -110,7 +110,7 @@ download_file(link, downloadDir + "/" + tarball)
 
 extract_tarball(version)
 config_build(version)
-#make_build(version)
+make_build(version)
 
 
 print("Kernel successfully built.")
