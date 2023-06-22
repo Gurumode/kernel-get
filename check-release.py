@@ -47,7 +47,7 @@ def check_latest_kernel():
 	create_directory(downloadDir)
 	#download_file(link, downloadDir + "/" + latest_tarball)
 	
-	time_version = time.time() - start_time
+	global time_version = time.time() - start_time
 	
 	return latest_version, link
 
@@ -64,7 +64,7 @@ def download_file(url, save_path):
 	with open(save_path, 'wb') as file:
 		file.write(response.content)
 
-	time_download = time.time() - start_time
+	global time_download = time.time() - start_time
 
 
 def extract_tarball(version):
@@ -72,7 +72,7 @@ def extract_tarball(version):
 	
 	subprocess.call(["bash", "extract.sh", version])
 	
-	time_extract = time.time() - start_time
+	global time_extract = time.time() - start_time
 
 
 def config_build(version):
@@ -80,7 +80,7 @@ def config_build(version):
 	
 	subprocess.call(["bash", "config.sh", version])
 	
-	time_config = time.time() - start_time
+	global time_config = time.time() - start_time
 
 
 def make_build(version):
@@ -88,7 +88,7 @@ def make_build(version):
 	
 	subprocess.call(["bash", "make.sh", version])
 	
-	time_make = time.time() - start_time
+	global time_make = time.time() - start_time
 
 version, link = check_latest_kernel()
 print("Version: ", version)
