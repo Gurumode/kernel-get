@@ -168,7 +168,7 @@ else:
 
 #	Create a database entry for this kernel version so that it isn't built
 #	multiple times.
-dbCursor.execute("INSERT INTO builds SET (version, started_at, time_version) VALUES (?, ?, ?)", (version, time.time(), time_version))
+dbCursor.execute("INSERT INTO builds (version, started_at, time_version) VALUES (?, ?, ?)", (version, time.time(), time_version))
 dbHnd.commit()
 row_id = dbCursor.lastrowid
 
