@@ -54,8 +54,6 @@ def check_latest_kernel():
 		latest_link = version_element.find('a')
 		latest_tarball = "linux-" + latest_version + ".tar.xz"
 		
-		print("Latest kernel version:", latest_version)
-		
 		if latest_link:
 			link = latest_link['href']
 			#print("Link: ", link)
@@ -113,7 +111,8 @@ def make_build(version):
 	start_time = time.time()
 	global time_make
 	
-	subprocess.call(["bash", "make.sh", version])
+	#subprocess.call(["bash", "make.sh", version])
+	subprocess.call(['makepkg', '-c'], cwd="linux-bpir64-gurumode")
 	
 	time_make = time.time() - start_time
 	
@@ -134,6 +133,15 @@ def config_database():
 						complete INTEGER
 					)''')
 	dbHnd.commit()
+	
+def generate_Pkgbuild(version):
+	with open("pkgbuild-template", 'r') as file:
+		pbtemplate = file.read()
+		
+	pbtemplate = pbtemplate.replace("[KERNELVERSION]", version)
+	
+	with open("linux-bpi64-gurumode/PKGBUILD", 'w') as file:
+		file.write(pbtemplate)
 
 ################################################################################
 #
@@ -157,6 +165,23 @@ if recent is None or recent["version"] is not version:
 else:
 	print("No update.")
 	sys.exit(0)
+
+#	Create a database entry for this kernel version so that it isn't built
+#	multiple times.
+dbCursor.execute("INSERT INTO builds SET (version, started_at, time_version) VALUES (?, ?, ?)", (version, time.time(), time_version))
+dbHnd.commit()
+row_id = dbCursor.lastrowid
+
+#	Now we need to copy the pkgbuild template to the build directory.
+generate_Pkgbuild(version)
+
+#	Run makepkg on the new pkgbuild
+make_build(version)
+dbCursor.execute("UPDATE builds SET time_make = ? WHERE id = ?", [time_make, row_id])
+dbHnd.commit()
+
+#	Packages are built.  These will need to be added to the repo
+#	The process for that comes later tonight
 
 #	Exit for now while testing.
 sys.exit(0)
