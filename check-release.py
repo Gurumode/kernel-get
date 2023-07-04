@@ -45,30 +45,27 @@ def check_latest_kernel():
 	start_time = time.time()
 	global time_version
 	
-	url = "https://www.kernel.org/"
+	url = "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/atom/?h=linux-rolling-stable"
+
 	response = requests.get(url)
-	soup = BeautifulSoup(response.text, "html.parser")
+	soup = BeautifulSoup(response.content, "lxml")
 
 	try:
-		version_element = soup.select_one("#latest_link")
-		latest_version = version_element.get_text(strip=True)
-		latest_link = version_element.find('a')
-		latest_tarball = "linux-" + latest_version + ".tar.xz"
-		
-		if latest_link:
-			link = latest_link['href']
-			#print("Link: ", link)
-		else:
-			print("No download link found.")
-			sys.exit(1)
+		entry = soup.find("entry")
+		title = entry.find("title")
 
+		# Extract the version from the title element text
+		version = title.get_text()
+		version = version.replace("Merge", "")
+		version = version.replace("v", "")
+		version = version.strip()
 	except Exception as e:
-			print("Error:", e)
-			sys.exit(1)
+		print("Error:", e)
+		sys.exit(1)
 	
 	time_version = time.time() - start_time
 	
-	return latest_version, link
+	return version
 	
 
 def make_build(version):
@@ -116,9 +113,8 @@ def generate_Pkgbuild(version):
 #	First, check that the local database has been configured
 config_database()
 
-version, link = check_latest_kernel()
+version = check_latest_kernel()
 print("Kernel Version: ", version)
-print("Kernel Link: ", link)
 
 #	Check the newest kernel version with the most recently built kernel
 dbCursor.execute("SELECT * FROM builds ORDER BY id DESC LIMIT 1")
