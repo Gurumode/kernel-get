@@ -2,6 +2,8 @@ import getpass
 import os
 import requests
 import time
+import shutil
+import sqlite3
 import subprocess
 import sys
 from bs4 import BeautifulSoup
@@ -17,6 +19,26 @@ time_download = 0
 time_extract = 0
 time_config = 0
 time_make = 0
+
+#	Globals
+dbHnd = ""
+dbCursor = ""
+
+def cleanEnvironment():
+	#	We need to remove any of the build artifacts
+	#		pkgbuild
+	#			src
+	#			pkg
+	
+	if not os.path.exists("linux-bpir64-gurumode"):
+		print("pkgbuild information is missing.")
+		sys.exit(1)
+	
+	for filename in os.listdir("linux-bpi64-gurumode"):
+		if filename.endswith(".tar.xz"):
+			file_path = os.path.join("linux-bpi64-gurumode", filename)
+			os.remove(file_path)
+	
 
 def check_latest_kernel():
 	start_time = time.time()
@@ -94,15 +116,50 @@ def make_build(version):
 	subprocess.call(["bash", "make.sh", version])
 	
 	time_make = time.time() - start_time
+	
+def config_database():
+	global dbHnd
+	global dbCursor
+	
+	dbHnd = sqlite3.connect('history.db')
+	dbCursor = dbHnd.cursor()
+	
+	#	Create the build table if it has not already been created
+	dbCursor.execute("CREATE TABLE IF NOT EXISTS builds (
+						id INTEGER PRIMARY KEY,
+						version TEXT,
+						started_at INTEGER,
+						time_version INTEGER,
+						time_make INTEGER,
+						complete INTEGER
+					)")
+	dbHnd.commit()
+
+################################################################################
+#
+#	Code and stuff
+#
+################################################################################
+
+#	First, check that the local database has been configured
+config_database()
 
 version, link = check_latest_kernel()
-print("Version: ", version)
-print("Link: ", link)
+print("Kernel Version: ", version)
+print("Kernel Link: ", link)
 
+#	Check the newest kernel version with the most recently built kernel
+dbCursor.execute("SELECT * FROM builds ORDER BY id DESC LIMIT 1")
+recent = dbCursor.fetchone()
 
-#	This is where we need to check if the latest version is newer than the
-#	previously compiled version.  If so, then it needs to be downloaded,
-#	extracted, and built.
+if recent is None or recent["version"] is not version:
+	print("Kernel appears to be new.")
+else:
+	print("No update.")
+	sys.exit(0)
+
+#	Exit for now while testing.
+sys.exit(0)
 
 #	For now, we assume it is newer
 tarball = "linux-" + version + ".tar.xz"
