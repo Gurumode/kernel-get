@@ -11,18 +11,18 @@ rows = dbCursor.fetchall()
 data = []
 for row in rows:
 	rowData = []
-	rowData['id'] = row['id']
-	rowData["version"] = row["version"]
+	rowData['id'] = row[0]
+	rowData["version"] = row[1]
 	
-	dt = datetime.datetime.fromtimestamp(row["started_at"])
+	dt = datetime.datetime.fromtimestamp(row[2])
 	prettyDate = dt.strftime("%Y-%m-%d %H:%M:%S")
 	row["started_at"] = prettyDate
 	
-	rowData["time_version"] = row["time_version"]
+	rowData["time_version"] = row[3]
 	
 	rowData["time_make"] = str(row[4] // 3600) + ":" + str((row[4] % 3600) // 60) + ":" + str((row[4] % 3600) % 60)
 	
-	rowData["complete"] = row["complete"]
+	rowData["complete"] = row[5]
 	
 	data.append(row)
 	
