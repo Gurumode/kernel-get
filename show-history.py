@@ -10,7 +10,7 @@ rows = dbCursor.fetchall()
 
 data = []
 for row in rows:
-	rowData = []
+	rowData = {}
 	rowData['id'] = row[0]
 	rowData["version"] = row[1]
 	
