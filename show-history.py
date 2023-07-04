@@ -10,7 +10,7 @@ rows = dbCursor.fetchall()
 
 data = []
 for row in rows:
-	row["time_make"] = (row["time_make"] // 3600) + ":" + ((row["time_make"] % 3600) // 60) + ":" + ((row["time_make"] % 3600) % 60)
+	row["time_make"] = (row[4] // 3600) + ":" + ((row[4] % 3600) // 60) + ":" + ((row[4] % 3600) % 60)
 	
 	dt = datetime.datetime.fromtimestamp(row["started_at"])
 	prettyDate = dt.strftime("%Y-%m-%d %H:%M:%S")
