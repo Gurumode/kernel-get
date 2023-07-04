@@ -6,7 +6,7 @@ dbCursor = dbHnd.cursor()
 
 #	Create the build table if it has not already been created
 dbCursor.execute("SELECT * FROM builds ORDER BY id ASC")
-rows = cursor.fetchall()
+rows = dbCursor.fetchall()
 
 data = []
 for row in rows:
