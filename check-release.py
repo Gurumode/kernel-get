@@ -125,14 +125,14 @@ def config_database():
 	dbCursor = dbHnd.cursor()
 	
 	#	Create the build table if it has not already been created
-	dbCursor.execute("CREATE TABLE IF NOT EXISTS builds (
+	dbCursor.execute('''CREATE TABLE IF NOT EXISTS builds (
 						id INTEGER PRIMARY KEY,
 						version TEXT,
 						started_at INTEGER,
 						time_version INTEGER,
 						time_make INTEGER,
 						complete INTEGER
-					)")
+					)''')
 	dbHnd.commit()
 
 ################################################################################
