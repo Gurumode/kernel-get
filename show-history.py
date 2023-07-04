@@ -21,7 +21,7 @@ for row in rows:
 	
 	rowData["time_version"] = row[3]
 	
-	rowData["time_make"] = str(row[4] // 3600) + ":" + str((row[4] % 3600) // 60) + ":" + str((row[4] % 3600) % 60)
+	rowData["time_make"] = str(int(row[4] // 3600)) + ":" + str(int((row[4] % 3600) // 60)) + ":" + str(int((row[4] % 3600) % 60))
 	
 	rowData["complete"] = row[5]
 	
