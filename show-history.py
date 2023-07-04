@@ -25,7 +25,7 @@ for row in rows:
 	
 	rowData["complete"] = row[5]
 	
-	data.append(row)
+	data.append(rowData)
 	
 headers = ['id', 'version', 'started_at', 'time_version', 'time_make', 'complete']
 print(tabulate(data, headers, tablefmt="fancy_grid"))
