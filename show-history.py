@@ -11,7 +11,7 @@ rows = dbCursor.fetchall()
 data = []
 for row in rows:
 	rowData = []
-	rowData["id"] = row["id"]
+	rowData['id'] = row['id']
 	rowData["version"] = row["version"]
 	
 	dt = datetime.datetime.fromtimestamp(row["started_at"])
