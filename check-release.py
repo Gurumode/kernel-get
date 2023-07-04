@@ -66,9 +66,6 @@ def check_latest_kernel():
 			print("Error:", e)
 			sys.exit(1)
 	
-	create_directory(downloadDir)
-	#download_file(link, downloadDir + "/" + latest_tarball)
-	
 	time_version = time.time() - start_time
 	
 	return latest_version, link
