@@ -140,7 +140,7 @@ def generate_Pkgbuild(version):
 		
 	pbtemplate = pbtemplate.replace("[KERNELVERSION]", version)
 	
-	with open("linux-bpi64-gurumode/PKGBUILD", 'w') as file:
+	with open("linux-bpir64-gurumode/PKGBUILD", 'w') as file:
 		file.write(pbtemplate)
 
 ################################################################################
