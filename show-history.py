@@ -17,7 +17,7 @@ for row in rows:
 	
 	dt = datetime.datetime.fromtimestamp(row[2])
 	prettyDate = dt.strftime("%Y-%m-%d %H:%M:%S")
-	row["started_at"] = prettyDate
+	rowData["started_at"] = prettyDate
 	
 	rowData["time_version"] = row[3]
 	
