@@ -28,6 +28,7 @@ for row in rows:
 	data.append(rowData)
 	
 headers = ['id', 'version', 'started_at', 'time_version', 'time_make', 'complete']
-print(tabulate(data, headers, tablefmt="fancy_grid"))
+listOfRows = [list(d.values()) for d in data]
+print(tabulate(listOfRows, headers, tablefmt="fancy_grid"))
 
 dbHnd.close()
