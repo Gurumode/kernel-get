@@ -1,4 +1,3 @@
-import getpass
 import os
 import requests
 import time
@@ -8,16 +7,8 @@ import subprocess
 import sys
 from bs4 import BeautifulSoup
 
-#downloadDir = "/home/" + getpass.getuser() + "/Code/kernel-get/Downloads"
-downloadDir = "Downloads"
-buildPrefix = "linux-"
-buildSuffix = "-bpi-gurumode"
-
 #	Create a few variables to track how long each step takes.
 time_version = 0
-time_download = 0
-time_extract = 0
-time_config = 0
 time_make = 0
 
 #	Globals
@@ -25,20 +16,30 @@ dbHnd = ""
 dbCursor = ""
 
 def cleanEnvironment():
-	#	We need to remove any of the build artifacts
-	#		pkgbuild
-	#			src
-	#			pkg
+	#	Clean up the build environment.  This includes removing any pkg and src
+	#	directories.  It also includes copying the kernel configuration.
 	
 	if not os.path.exists("linux-bpir64-gurumode"):
 		print("pkgbuild information is missing.")
 		sys.exit(1)
 	
-	for filename in os.listdir("linux-bpi64-gurumode"):
+	for filename in os.listdir("linux-bpir64-gurumode"):
 		if filename.endswith(".tar.xz"):
-			file_path = os.path.join("linux-bpi64-gurumode", filename)
+			file_path = os.path.join("linux-bpir64-gurumode", filename)
 			os.remove(file_path)
 	
+	if os.path.exists("linux-bpir64-gurumode/src"):
+		shutil.rmtree("linux-bpir64-gurumode/src")
+	
+	if os.path.exists("linux-bpir64-gurumode/pkg"):
+		shutil.rmtree("linux-bpir64-gurumode/pkg")
+		
+	#	Copy the kernel configuration
+	with open("config/kernel.config", 'r') as file:
+		kernelConfig = file.read()
+	
+	with open("linux-bpir64-gurumode/defconfig", 'w') as file:
+		file.write(kernelConfig)
 
 def check_latest_kernel():
 	start_time = time.time()
@@ -71,41 +72,7 @@ def check_latest_kernel():
 	time_version = time.time() - start_time
 	
 	return latest_version, link
-
-def create_directory(directory_path):
-	if not os.path.exists(directory_path):
-		os.makedirs(directory_path)
 	
-
-def download_file(url, save_path):
-	start_time = time.time()
-	global time_download
-	
-	create_directory(downloadDir)
-	response = requests.get(url)
-	with open(save_path, 'wb') as file:
-		file.write(response.content)
-
-	time_download = time.time() - start_time
-
-
-def extract_tarball(version):
-	start_time = time.time()
-	global time_extract
-	
-	subprocess.call(["bash", "extract.sh", version])
-	
-	time_extract = time.time() - start_time
-
-
-def config_build(version):
-	start_time = time.time()
-	global time_config
-	
-	subprocess.call(["bash", "config.sh", version])
-	
-	time_config = time.time() - start_time
-
 
 def make_build(version):
 	start_time = time.time()
@@ -172,6 +139,9 @@ dbCursor.execute("INSERT INTO builds (version, started_at, time_version) VALUES 
 dbHnd.commit()
 row_id = dbCursor.lastrowid
 
+#	Clean up the environment
+cleanEnvironment()
+
 #	Now we need to copy the pkgbuild template to the build directory.
 generate_Pkgbuild(version)
 
@@ -183,21 +153,8 @@ dbHnd.commit()
 #	Packages are built.  These will need to be added to the repo
 #	The process for that comes later tonight
 
-#	Exit for now while testing.
-sys.exit(0)
-
-#	For now, we assume it is newer
-tarball = "linux-" + version + ".tar.xz"
-download_file(link, downloadDir + "/" + tarball)
-
-extract_tarball(version)
-config_build(version)
-make_build(version)
 
 
-print("Kernel successfully built.")
-print(f"Check:\t\t{time_version}")
-print(f"Download:\t{time_download}")
-print(f"Extract:\t{time_extract}")
-print(f"Config:\t\t{time_config}")
-print(f"Make:\t\t{time_make}")
+
+
+
